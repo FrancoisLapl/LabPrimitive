@@ -148,7 +148,7 @@ void ProcessImageBatch(int nbItems, char *character, FILE *fp, IplImage *&img, I
         // Here you can add more features to your feature vector by filling the other columns: fVector[iNum][3] = ???; fVector[iNum][4] = ???;
 
         // Shows the feature vector at the screen
-        printf("\n%d %f %f", iNum, fVector[iNum][1], fVector[iNum][2]);
+        printf(" : #%d %f %f\n\n", iNum, fVector[iNum][1], fVector[iNum][2]);
         //printf( "\n%d %f %f %f %f %f", iNum, fVector[iNum][1], fVector[iNum][2], fVector[iNum][3], fVector[iNum][4], fVector[iNum][5] );
 
         // And finally, store your features in a file
@@ -244,5 +244,5 @@ void BuildFileName(int iNum, char *character, char *cFileName, bool training = t
         sprintf (cFileName, "../Valid/%s%d.bmp", character, iNum);
     }
 
-    printf ( " %s\n", cFileName);
+    printf ( "%s", cFileName);
 }
