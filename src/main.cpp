@@ -2,7 +2,7 @@
 #include <highgui.h>		//OpenCV lib
 #include <string>
 
-#define NUM_SAMPLES 100
+#define NUM_SAMPLES 1000
 #define NUM_FEATURES 5
 
 using namespace std;
@@ -153,7 +153,7 @@ void InitCharArray(char *cFileName) {
 
 void
 ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, IplImage *&img, IplImage *&processed, bool training) {
-	int iNum;
+
 	CvSize tam;
 	IplImage *threshold;
 
@@ -181,7 +181,7 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 	InitCharArray(cFileName);
 
 	// Take all the image files at the range
-	for (iNum = firstItemNb; iNum <= lastItemNb; iNum++) {
+	for (int iNum = firstItemNb; iNum <= lastItemNb; iNum++) {
 		BuildFileName(iNum, character, cFileName, training);
 
 		// Load the image from disk to the structure img.
@@ -223,11 +223,11 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 
 		
 		// Store the feature value in the columns of the feature (matrix) vector
-		fVector[iNum][1] = fOrange;
-		fVector[iNum][2] = fWhite;
-		fVector[iNum][3] = fBrown;
-		fVector[iNum][4] = fDarkBlue;
-		fVector[iNum][5] = fLightBlue;
+		fVector[iNum][0] = fOrange;
+		fVector[iNum][1] = fWhite;
+		fVector[iNum][2] = fBrown;
+		fVector[iNum][3] = fDarkBlue;
+		fVector[iNum][4] = fLightBlue;
 		
 
 		// Here you can add more features to your feature vector by filling the other columns: fVector[iNum][3] = ???; fVector[iNum][4] = ???;
@@ -237,11 +237,11 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 		printf( "%d %f %f %f %f %f\n", iNum, fVector[iNum][1], fVector[iNum][2], fVector[iNum][3], fVector[iNum][4], fVector[iNum][5] );
 
 		// And finally, store your features in a file
+		fprintf(fp, "%f,", fVector[iNum][0]);
 		fprintf(fp, "%f,", fVector[iNum][1]);
 		fprintf(fp, "%f,", fVector[iNum][2]);
-		fprintf( fp, "%f,", fVector[iNum][3]);
-		fprintf( fp, "%f,", fVector[iNum][4]);
-		fprintf( fp, "%f,", fVector[iNum][5]);
+		fprintf(fp, "%f,", fVector[iNum][3]);
+		fprintf(fp, "%f,", fVector[iNum][4]);
 
 		// IMPORTANT
 		// Do not forget the label....
@@ -254,7 +254,7 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 		cvShowImage("Processed", processed);
 
 		// Wait until a key is pressed to continue...
-		//cvWaitKey(0);
+		cvWaitKey(0);
 	}
 }
 
