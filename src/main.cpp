@@ -23,7 +23,9 @@ float LightBlueFeatureExtraction(unsigned char red, unsigned char blue, unsigned
 
 void LoopOverAllPixels(const IplImage *img, const IplImage *processed, float &fOrange, float &fWhite, float &fBrown, float &fDarkBlue, float &fLightBlue);
 
-void ProcessImageBatch(int nbItems, char *character, FILE *fp, IplImage *&img, IplImage *&processed);
+void
+ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, IplImage *&img, IplImage *&processed,
+                  bool training);
 
 void InitCharArray(char *cFileName);
 
@@ -58,16 +60,41 @@ int main(int argc, char** argv)
 	// TRAINING SAMPLES 
 	// HOMER
 	// Homer Train 62 items: homer1.bmp - homer62.bmp
+	// Homer Valid 37 items: homer88.bmp - homer124.bmp
 	// *****************************************************************************************************************************************
-	ProcessImageBatch(62, "homer", fp, img, processed);
+
+    ProcessImageBatch(1, 62, "homer", fp, img, processed, true);
+    //ProcessImageBatch(88, 124, "homer", fp, img, processed, false);
 
 	// *****************************************************************************************************************************************
 	// TRAINING SAMPLES
 	// BART
 	// Bart Train: 80 items: bart1.bmp - bart80.bmp
+	// Bart Valid: 80 items: bart116.bmp - bart169.bmp
 	// *****************************************************************************************************************************************
 
-	ProcessImageBatch(80, "bart", fp, img, processed);
+    ProcessImageBatch(1, 80, "bart", fp, img, processed, true);
+    //ProcessImageBatch(116, 169, "bart", fp, img, processed, false);
+
+    // *****************************************************************************************************************************************
+    // TRAINING SAMPLES
+    // LISA
+    // Lisa Train: 33 items: lisa1.bmp - lisa33.bmp
+    // Lisa Valid: 33 items: lisa34.bmp - lisa46.bmp
+    // *****************************************************************************************************************************************
+
+    //ProcessImageBatch(1, 33, "lisa", fp, img, processed, true);
+    //ProcessImageBatch(34, 46, "lisa", fp, img, processed, false);
+
+    // *****************************************************************************************************************************************
+    // TRAINING SAMPLES
+    // OTHER
+    // Other Train: 121 items: other1.bmp - other121.bmp
+    // Other Valid: 121 items: other122.bmp - other170.bmp
+    // *****************************************************************************************************************************************
+
+    //ProcessImageBatch(1, 80, "other", fp, img, processed, true);
+    //ProcessImageBatch(122, 170, "other", fp, img, processed, false);
 
 	cvReleaseImage(&img);
 	cvDestroyWindow("Original");
@@ -88,7 +115,8 @@ void InitCharArray(char *cFileName) {
 	}
 }
 
-void ProcessImageBatch(int nbItems, char *character, FILE *fp, IplImage *&img, IplImage *&processed) {
+void
+ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, IplImage *&img, IplImage *&processed, bool training) {
 	int iNum;
 	CvSize tam;
 	IplImage *threshold;
@@ -99,6 +127,18 @@ void ProcessImageBatch(int nbItems, char *character, FILE *fp, IplImage *&img, I
 	float fBrown;
 	float fDarkBlue;
 	float fLightBlue;
+
+    // Setup .arff header
+    fprintf(fp, "@relation Homer-Bart\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "@attribute Orange real");
+    fprintf(fp, "@attribute White real");
+    fprintf(fp, "@attribute Brown real");
+    fprintf(fp, "@attribute DarkBlue real");
+    fprintf(fp, "@attribute LightBlue real\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "@attribute classe {homer, bart}\n");
+    fprintf(fp, "@data");
 
 	// In fact it is a "matrix of features"
 	float fVector[NUM_SAMPLES][NUM_FEATURES];
@@ -117,8 +157,8 @@ void ProcessImageBatch(int nbItems, char *character, FILE *fp, IplImage *&img, I
 	InitCharArray(cFileName);
 
 	// Take all the image files at the range
-	for (iNum = 1; iNum <= nbItems; iNum++) {
-		BuildFileName(iNum, character, cFileName, false);
+	for (iNum = 1; iNum <= lastItemNb; iNum++) {
+		BuildFileName(iNum, character, cFileName, training);
 
 		// Load the image from disk to the structure img.
 		// 1  - Load a 3-channel image (color)
