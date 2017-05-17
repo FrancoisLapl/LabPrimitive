@@ -35,12 +35,12 @@ int main(int argc, char** argv)
 	FILE *fp;
 
 	// Open a text file to store the feature vectors
-	fp = fopen("apprentissage-homer-bart.txt", "w");
-	// fp = fopen ("validation-homer-bart.txt","w");
+	fp = fopen("apprentissage-homer-bart.arff", "w");
+	// fp = fopen ("validation-homer-bart.arff","w");
 
 	if (fp == NULL) {
-		perror("failed to open apprentissage-homer-bart.txt");
-		// perror("failed to open validation-homer-bart.txt");
+		perror("failed to open apprentissage-homer-bart.arff");
+		// perror("failed to open validation-homer-bart.arff");
 		return EXIT_FAILURE;
 	}
 
@@ -131,14 +131,15 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
     // Setup .arff header
     fprintf(fp, "@relation Homer-Bart\n");
     fprintf(fp, "\n");
-    fprintf(fp, "@attribute Orange real");
-    fprintf(fp, "@attribute White real");
-    fprintf(fp, "@attribute Brown real");
-    fprintf(fp, "@attribute DarkBlue real");
+    fprintf(fp, "@attribute Orange real\n");
+    fprintf(fp, "@attribute White real\n");
+    fprintf(fp, "@attribute Brown real\n");
+    fprintf(fp, "@attribute DarkBlue real\n");
     fprintf(fp, "@attribute LightBlue real\n");
     fprintf(fp, "\n");
     fprintf(fp, "@attribute classe {homer, bart}\n");
     fprintf(fp, "@data");
+    fprintf(fp, "\n");
 
 	// In fact it is a "matrix of features"
 	float fVector[NUM_SAMPLES][NUM_FEATURES];
@@ -230,7 +231,7 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 		cvShowImage("Processed", processed);
 
 		// Wait until a key is pressed to continue...
-		cvWaitKey(0);
+		//cvWaitKey(0);
 	}
 }
 
