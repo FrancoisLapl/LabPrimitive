@@ -210,7 +210,7 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 
 		// Shows the feature vector at the screen
 		//printf(" : #%d %f %f\n\n", iNum, fVector[iNum][1], fVector[iNum][2]);
-		printf( "\n%d %f %f %f %f %f", iNum, fVector[iNum][1], fVector[iNum][2], fVector[iNum][3], fVector[iNum][4], fVector[iNum][5] );
+		printf( "%d %f %f %f %f %f\n", iNum, fVector[iNum][1], fVector[iNum][2], fVector[iNum][3], fVector[iNum][4], fVector[iNum][5] );
 
 		// And finally, store your features in a file
 		fprintf(fp, "%f,", fVector[iNum][1]);
