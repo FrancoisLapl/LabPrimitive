@@ -331,13 +331,22 @@ float OrangeFeatureExtraction(int h, int w, unsigned char red, unsigned char blu
 }
 
 void BuildFileName(int iNum, char *character, char *cFileName, bool training = true) {
-
+#ifdef __linux__ 
+    	char* trainPathPattern = "../Train/%s%d.bmp";
+    	char* trainPathPattern = "../Valid/%s%d.bmp";
+#elif _WIN32
+    	char* trainPathPattern = "Train/%s%d.bmp";
+    	char* trainPathPattern = "Valid/%s%d.bmp";
+#else
+    	char* trainPathPattern = "Train/%s%d.bmp";
+    	char* trainPathPattern = "Valid/%s%d.bmp";
+#endif
 	// Build the image filename and path to read from disk
 	if (training) {
-		sprintf(cFileName, "../Train/%s%d.bmp", character, iNum);
+		sprintf(cFileName, trainPathPattern, character, iNum);
 	}
 	else {
-		sprintf(cFileName, "../Valid/%s%d.bmp", character, iNum);
+		sprintf(cFileName, trainPathPattern, character, iNum);
 	}
 
 	printf("%s", cFileName);
