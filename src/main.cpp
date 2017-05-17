@@ -346,7 +346,7 @@ void BuildFileName(int iNum, char *character, char *cFileName, bool training = t
 		sprintf(cFileName, trainPathPattern, character, iNum);
 	}
 	else {
-		sprintf(cFileName, trainPathPattern, character, iNum);
+		sprintf(cFileName, validPathPattern, character, iNum);
 	}
 
 	printf("%s", cFileName);
