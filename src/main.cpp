@@ -44,19 +44,6 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-    // Setup .arff header
-    fprintf(fp, "@relation Homer-Bart\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "@attribute Orange real\n");
-    fprintf(fp, "@attribute White real\n");
-    fprintf(fp, "@attribute Brown real\n");
-    fprintf(fp, "@attribute DarkBlue real\n");
-    fprintf(fp, "@attribute LightBlue real\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "@attribute classe {homer, bart}\n");
-    fprintf(fp, "@data");
-    fprintf(fp, "\n");
-
 	// OpenCV variables related to the image structure.
 	// IplImage structure contains several information of the image (See OpenCV manual).
 	IplImage *img = NULL;
@@ -140,6 +127,19 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 	float fBrown;
 	float fDarkBlue;
 	float fLightBlue;
+
+    // Setup .arff header
+    fprintf(fp, "@relation Homer-Bart\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "@attribute Orange real\n");
+    fprintf(fp, "@attribute White real\n");
+    fprintf(fp, "@attribute Brown real\n");
+    fprintf(fp, "@attribute DarkBlue real\n");
+    fprintf(fp, "@attribute LightBlue real\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "@attribute classe {homer, bart}\n");
+    fprintf(fp, "@data");
+    fprintf(fp, "\n");
 
 	// In fact it is a "matrix of features"
 	float fVector[NUM_SAMPLES][NUM_FEATURES];
@@ -333,13 +333,13 @@ float OrangeFeatureExtraction(int h, int w, unsigned char red, unsigned char blu
 void BuildFileName(int iNum, char *character, char *cFileName, bool training = true) {
 #ifdef __linux__ 
     	char* trainPathPattern = "../Train/%s%d.bmp";
-    	char* trainPathPattern = "../Valid/%s%d.bmp";
+    	char* validPathPattern = "../Valid/%s%d.bmp";
 #elif _WIN32
     	char* trainPathPattern = "Train/%s%d.bmp";
-    	char* trainPathPattern = "Valid/%s%d.bmp";
+    	char* validPathPattern = "Valid/%s%d.bmp";
 #else
     	char* trainPathPattern = "Train/%s%d.bmp";
-    	char* trainPathPattern = "Valid/%s%d.bmp";
+    	char* validPathPattern = "Valid/%s%d.bmp";
 #endif
 	// Build the image filename and path to read from disk
 	if (training) {
