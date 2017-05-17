@@ -1,8 +1,11 @@
 #include <cv.h> 			//OpenCV lib
 #include <highgui.h>		//OpenCV lib
+#include <string>
 
 #define NUM_SAMPLES 100
 #define NUM_FEATURES 5
+
+using namespace std;
 
 // Bart Train: 80 items: bart1.bmp - bart80.bmp
 // Homer Train 62 items: homer1.bmp - homer62.bmp
@@ -31,17 +34,25 @@ void InitCharArray(char *cFileName);
 
 int main(int argc, char** argv)
 {
-
+    bool training = false;
+    char *resultFileName;
 	FILE *fp;
 
+    string arg = argv[1];
+    if (arg == "train"){
+        training = true;
+        resultFileName = "apprentissage-homer-bart.arff";
+    } else {
+        training = false;
+        resultFileName = "validation-homer-bart.arff";
+    }
+
 	// Open a text file to store the feature vectors
-	fp = fopen("apprentissage-homer-bart.arff", "w");
-	// fp = fopen ("validation-homer-bart.arff","w");
+	fp = fopen(resultFileName, "w");
 
 	if (fp == NULL) {
-		perror("failed to open apprentissage-homer-bart.arff");
-		// perror("failed to open validation-homer-bart.arff");
-		return EXIT_FAILURE;
+        perror(resultFileName);
+        return EXIT_FAILURE;
 	}
 
 	// OpenCV variables related to the image structure.
@@ -63,8 +74,11 @@ int main(int argc, char** argv)
 	// Homer Valid 37 items: homer88.bmp - homer124.bmp
 	// *****************************************************************************************************************************************
 
-    ProcessImageBatch(1, 62, "homer", fp, img, processed, true);
-    //ProcessImageBatch(88, 124, "homer", fp, img, processed, false);
+    if (training){
+        ProcessImageBatch(1, 62, "homer", fp, img, processed, true);
+    } else {
+        ProcessImageBatch(88, 124, "homer", fp, img, processed, false);
+    }
 
 	// *****************************************************************************************************************************************
 	// TRAINING SAMPLES
@@ -73,8 +87,11 @@ int main(int argc, char** argv)
 	// Bart Valid: 80 items: bart116.bmp - bart169.bmp
 	// *****************************************************************************************************************************************
 
-    ProcessImageBatch(1, 80, "bart", fp, img, processed, true);
-    //ProcessImageBatch(116, 169, "bart", fp, img, processed, false);
+    if (training){
+        ProcessImageBatch(1, 80, "bart", fp, img, processed, true);
+    } else {
+        ProcessImageBatch(116, 169, "bart", fp, img, processed, false);
+    }
 
     // *****************************************************************************************************************************************
     // TRAINING SAMPLES
@@ -83,8 +100,11 @@ int main(int argc, char** argv)
     // Lisa Valid: 33 items: lisa34.bmp - lisa46.bmp
     // *****************************************************************************************************************************************
 
-    //ProcessImageBatch(1, 33, "lisa", fp, img, processed, true);
-    //ProcessImageBatch(34, 46, "lisa", fp, img, processed, false);
+    if (training){
+        //ProcessImageBatch(1, 33, "lisa", fp, img, processed, true);
+    } else {
+        //ProcessImageBatch(34, 46, "lisa", fp, img, processed, false);
+    }
 
     // *****************************************************************************************************************************************
     // TRAINING SAMPLES
@@ -93,8 +113,11 @@ int main(int argc, char** argv)
     // Other Valid: 121 items: other122.bmp - other170.bmp
     // *****************************************************************************************************************************************
 
-    //ProcessImageBatch(1, 80, "other", fp, img, processed, true);
-    //ProcessImageBatch(122, 170, "other", fp, img, processed, false);
+    if (training){
+        //ProcessImageBatch(1, 80, "other", fp, img, processed, true);
+    } else {
+        //ProcessImageBatch(122, 170, "other", fp, img, processed, false);
+    }
 
 	cvReleaseImage(&img);
 	cvDestroyWindow("Original");
