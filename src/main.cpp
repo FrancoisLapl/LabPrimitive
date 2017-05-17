@@ -55,6 +55,19 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
 	}
 
+    // Setup .arff header
+    fprintf(fp, "@relation Homer-Bart\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "@attribute Orange real\n");
+    fprintf(fp, "@attribute White real\n");
+    fprintf(fp, "@attribute Brown real\n");
+    fprintf(fp, "@attribute DarkBlue real\n");
+    fprintf(fp, "@attribute LightBlue real\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "@attribute classe {homer, bart}\n");
+    fprintf(fp, "@data");
+    fprintf(fp, "\n");
+
 	// OpenCV variables related to the image structure.
 	// IplImage structure contains several information of the image (See OpenCV manual).
 	IplImage *img = NULL;
@@ -151,19 +164,6 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 	float fDarkBlue;
 	float fLightBlue;
 
-    // Setup .arff header
-    fprintf(fp, "@relation Homer-Bart\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "@attribute Orange real\n");
-    fprintf(fp, "@attribute White real\n");
-    fprintf(fp, "@attribute Brown real\n");
-    fprintf(fp, "@attribute DarkBlue real\n");
-    fprintf(fp, "@attribute LightBlue real\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "@attribute classe {homer, bart}\n");
-    fprintf(fp, "@data");
-    fprintf(fp, "\n");
-
 	// In fact it is a "matrix of features"
 	float fVector[NUM_SAMPLES][NUM_FEATURES];
 
@@ -181,7 +181,7 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 	InitCharArray(cFileName);
 
 	// Take all the image files at the range
-	for (iNum = 1; iNum <= lastItemNb; iNum++) {
+	for (iNum = firstItemNb; iNum <= lastItemNb; iNum++) {
 		BuildFileName(iNum, character, cFileName, training);
 
 		// Load the image from disk to the structure img.
