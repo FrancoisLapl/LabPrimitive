@@ -318,8 +318,7 @@ __pycache__/
 *.xsd.cs
 
 *.DS_Store
-apprentissage-homer-bart.txt
-apprentissage-homer-bart.arff
+
 
 # CMAKE Debut
 cmake-build-debug/
