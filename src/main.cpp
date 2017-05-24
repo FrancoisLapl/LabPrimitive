@@ -3,7 +3,7 @@
 #include <string>
 
 #define NUM_SAMPLES 1000
-#define NUM_FEATURES 5
+#define NUM_FEATURES 6
 
 using namespace std;
 
@@ -20,53 +20,57 @@ float WhiteFeatureExtraction(unsigned char red, unsigned char blue, unsigned cha
 
 float BrownFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fBrown);
 
-float DarkBlueFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fDarkBlue);
+float BlueFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fBlue);
 
-float LightBlueFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fLightBlue);
+float GreenFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fGreen);
 
-void LoopOverAllPixels(const IplImage *img, const IplImage *processed, float &fOrange, float &fWhite, float &fBrown, float &fDarkBlue, float &fLightBlue);
+float RedFeatureExtraction(int h, int w, unsigned char red, unsigned char blue, unsigned char green, float fRed, const IplImage *processed);
+
+void LoopOverAllPixels(const IplImage *img, const IplImage *processed, float &fOrange, float &fWhite, float &fBrown, float &fBlue, float &fGreen, float &fRed);
 
 void
 ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, IplImage *&img, IplImage *&processed,
-                  bool training);
+	bool training);
 
 void InitCharArray(char *cFileName);
 
 int main(int argc, char** argv)
 {
-    bool training = false;
-    char *resultFileName;
+	bool training = false;
+	char *resultFileName;
 	FILE *fp;
 
-    string arg = argv[1];
-    if (arg == "train"){
-        training = true;
-        resultFileName = "apprentissage-homer-bart.arff";
-    } else {
-        training = false;
-        resultFileName = "validation-homer-bart.arff";
-    }
+	string arg = argv[1];
+	if (arg == "train") {
+		training = true;
+		resultFileName = "apprentissage-homer-bart-lisa.arff";
+	}
+	else {
+		training = false;
+		resultFileName = "validation-homer-bart-lisa.arff";
+	}
 
 	// Open a text file to store the feature vectors
 	fp = fopen(resultFileName, "w");
 
 	if (fp == NULL) {
-        perror(resultFileName);
-        return EXIT_FAILURE;
+		perror(resultFileName);
+		return EXIT_FAILURE;
 	}
 
-    // Setup .arff header
-    fprintf(fp, "@relation Homer-Bart\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "@attribute Orange real\n");
-    fprintf(fp, "@attribute White real\n");
-    fprintf(fp, "@attribute Brown real\n");
-    fprintf(fp, "@attribute DarkBlue real\n");
-    fprintf(fp, "@attribute LightBlue real\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "@attribute classe {homer, bart}\n");
-    fprintf(fp, "@data");
-    fprintf(fp, "\n");
+	// Setup .arff header
+	fprintf(fp, "@relation Homer-Bart\n");
+	fprintf(fp, "\n");
+	fprintf(fp, "@attribute Orange real\n");
+	fprintf(fp, "@attribute White real\n");
+	fprintf(fp, "@attribute Brown real\n");
+	fprintf(fp, "@attribute Blue real\n");
+	fprintf(fp, "@attribute Green real\n");
+	fprintf(fp, "@attribute Red real\n");
+	fprintf(fp, "\n");
+	fprintf(fp, "@attribute classe {homer, bart, lisa}\n");
+	fprintf(fp, "@data");
+	fprintf(fp, "\n");
 
 	// OpenCV variables related to the image structure.
 	// IplImage structure contains several information of the image (See OpenCV manual).
@@ -87,11 +91,12 @@ int main(int argc, char** argv)
 	// Homer Valid 37 items: homer88.bmp - homer124.bmp
 	// *****************************************************************************************************************************************
 
-    if (training){
-        ProcessImageBatch(1, 62, "homer", fp, img, processed, true);
-    } else {
-        ProcessImageBatch(88, 124, "homer", fp, img, processed, false);
-    }
+	if (training) {
+		ProcessImageBatch(1, 62, "homer", fp, img, processed, true);
+	}
+	else {
+		ProcessImageBatch(88, 124, "homer", fp, img, processed, false);
+	}
 
 	// *****************************************************************************************************************************************
 	// TRAINING SAMPLES
@@ -100,37 +105,40 @@ int main(int argc, char** argv)
 	// Bart Valid: 80 items: bart116.bmp - bart169.bmp
 	// *****************************************************************************************************************************************
 
-    if (training){
-        ProcessImageBatch(1, 80, "bart", fp, img, processed, true);
-    } else {
-        ProcessImageBatch(116, 169, "bart", fp, img, processed, false);
-    }
+	if (training) {
+		ProcessImageBatch(1, 80, "bart", fp, img, processed, true);
+	}
+	else {
+		ProcessImageBatch(116, 169, "bart", fp, img, processed, false);
+	}
 
-    // *****************************************************************************************************************************************
-    // TRAINING SAMPLES
-    // LISA
-    // Lisa Train: 33 items: lisa1.bmp - lisa33.bmp
-    // Lisa Valid: 33 items: lisa34.bmp - lisa46.bmp
-    // *****************************************************************************************************************************************
+	// *****************************************************************************************************************************************
+	// TRAINING SAMPLES
+	// LISA
+	// Lisa Train: 33 items: lisa1.bmp - lisa33.bmp
+	// Lisa Valid: 33 items: lisa34.bmp - lisa46.bmp
+	// *****************************************************************************************************************************************
 
-    if (training){
-        //ProcessImageBatch(1, 33, "lisa", fp, img, processed, true);
-    } else {
-        //ProcessImageBatch(34, 46, "lisa", fp, img, processed, false);
-    }
+	if (training) {
+		ProcessImageBatch(1, 33, "lisa", fp, img, processed, true);
+	}
+	else {
+		ProcessImageBatch(34, 46, "lisa", fp, img, processed, false);
+	}
 
-    // *****************************************************************************************************************************************
-    // TRAINING SAMPLES
-    // OTHER
-    // Other Train: 121 items: other1.bmp - other121.bmp
-    // Other Valid: 121 items: other122.bmp - other170.bmp
-    // *****************************************************************************************************************************************
+	// *****************************************************************************************************************************************
+	// TRAINING SAMPLES
+	// OTHER
+	// Other Train: 121 items: other1.bmp - other121.bmp
+	// Other Valid: 121 items: other122.bmp - other170.bmp
+	// *****************************************************************************************************************************************
 
-    if (training){
-        //ProcessImageBatch(1, 80, "other", fp, img, processed, true);
-    } else {
-        //ProcessImageBatch(122, 170, "other", fp, img, processed, false);
-    }
+	if (training) {
+		//ProcessImageBatch(1, 80, "other", fp, img, processed, true);
+	}
+	else {
+		//ProcessImageBatch(122, 170, "other", fp, img, processed, false);
+	}
 
 	cvReleaseImage(&img);
 	cvDestroyWindow("Original");
@@ -161,8 +169,9 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 	float fOrange;
 	float fWhite;
 	float fBrown;
-	float fDarkBlue;
-	float fLightBlue;
+	float fBlue;
+	float fGreen;
+	float fRed;
 
 	// In fact it is a "matrix of features"
 	float fVector[NUM_SAMPLES][NUM_FEATURES];
@@ -207,10 +216,11 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 		fOrange = 0.0;
 		fWhite = 0.0;
 		fBrown = 0.0;
-		fDarkBlue = 0.0;
-		fLightBlue = 0.0;
+		fBlue = 0.0;
+		fGreen = 0.0;
+		fRed = 0.0;
 
-		LoopOverAllPixels(img, processed, fOrange, fWhite, fBrown, fDarkBlue, fLightBlue);
+		LoopOverAllPixels(img, processed, fOrange, fWhite, fBrown, fBlue, fGreen, fRed);
 
 		// Lets make our counting somewhat independent on the image size...
 		// Compute the percentage of pixels of a given colour.
@@ -218,23 +228,25 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 		fOrange = fOrange / ((int)img->height * (int)img->width);
 		fWhite = fWhite / ((int)img->height * (int)img->width);
 		fBrown = fBrown / ((int)img->height * (int)img->width);
-		fDarkBlue = fDarkBlue / ((int)img->height * (int)img->width);
-		fLightBlue = fLightBlue / ((int)img->height * (int)img->width);
+		fBlue = fBlue / ((int)img->height * (int)img->width);
+		fGreen = fGreen / ((int)img->height * (int)img->width);
+		fRed = fRed / ((int)img->height * (int)img->width);
 
-		
+
 		// Store the feature value in the columns of the feature (matrix) vector
 		fVector[iNum][0] = fOrange;
 		fVector[iNum][1] = fWhite;
 		fVector[iNum][2] = fBrown;
-		fVector[iNum][3] = fDarkBlue;
-		fVector[iNum][4] = fLightBlue;
-		
+		fVector[iNum][3] = fBlue;
+		fVector[iNum][4] = fGreen;
+		fVector[iNum][5] = fRed;
+
 
 		// Here you can add more features to your feature vector by filling the other columns: fVector[iNum][3] = ???; fVector[iNum][4] = ???;
 
 		// Shows the feature vector at the screen
 		//printf(" : #%d %f %f\n\n", iNum, fVector[iNum][1], fVector[iNum][2]);
-		printf( "%d %f %f %f %f %f\n", iNum, fVector[iNum][0], fVector[iNum][1], fVector[iNum][2], fVector[iNum][3], fVector[iNum][4] );
+		printf("%d %f %f %f %f %f\n", iNum, fVector[iNum][0], fVector[iNum][1], fVector[iNum][2], fVector[iNum][3], fVector[iNum][4], fVector[iNum][5]);
 
 		// And finally, store your features in a file
 		fprintf(fp, "%f,", fVector[iNum][0]);
@@ -242,6 +254,7 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 		fprintf(fp, "%f,", fVector[iNum][2]);
 		fprintf(fp, "%f,", fVector[iNum][3]);
 		fprintf(fp, "%f,", fVector[iNum][4]);
+		fprintf(fp, "%f,", fVector[iNum][5]);
 
 		// IMPORTANT
 		// Do not forget the label....
@@ -258,7 +271,7 @@ ProcessImageBatch(int firstItemNb, int lastItemNb, char *character, FILE *fp, Ip
 	}
 }
 
-void LoopOverAllPixels(const IplImage *img, const IplImage *processed, float &fOrange, float &fWhite, float &fBrown, float &fDarkBlue, float &fLightBlue) {
+void LoopOverAllPixels(const IplImage *img, const IplImage *processed, float &fOrange, float &fWhite, float &fBrown, float &fBlue, float &fGreen, float &fRed) {
 
 	int h;
 	int w;
@@ -285,8 +298,9 @@ void LoopOverAllPixels(const IplImage *img, const IplImage *processed, float &fO
 			fOrange = OrangeFeatureExtraction(h, w, red, blue, green, fOrange, processed);
 			fWhite = WhiteFeatureExtraction(red, blue, green, fWhite);
 			fBrown = BrownFeatureExtraction(red, blue, green, fBrown);
-			fDarkBlue = DarkBlueFeatureExtraction(red, blue, green, fDarkBlue);
-			fLightBlue = LightBlueFeatureExtraction(red, blue, green, fLightBlue);
+			fBlue = BlueFeatureExtraction(red, blue, green, fBlue);
+			fGreen = GreenFeatureExtraction(red, blue, green, fGreen);
+			fRed = RedFeatureExtraction(h, w, red, blue, green, fRed, processed);
 
 			// Here you can add your own features....... Good luck
 
@@ -316,24 +330,37 @@ float BrownFeatureExtraction(unsigned char red, unsigned char blue, unsigned cha
 	return fBrown;
 }
 
-float DarkBlueFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fDarkBlue) {
+float BlueFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fBlue) {
 
-	if (blue >= 100 && green <= 75 && red <= 25)
+	if (blue >= 100 && green <= 130 && red <= 25)
 	{
-		fDarkBlue++;
+		fBlue++;
 	}
 
-	return fDarkBlue;
+	return fBlue;
 }
 
-float LightBlueFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fLightBlue) {
+float GreenFeatureExtraction(unsigned char red, unsigned char blue, unsigned char green, float fGreen) {
 
-	if (blue >= 100 && green > 75 && green <= 130 && red <= 25)
+	if (blue >= 14 && blue <= 34 && green >= 130 && green <= 150 && red <= 90 && red >= 70)
 	{
-		fLightBlue++;
+		fGreen++;
 	}
 
-	return fLightBlue;
+	return fGreen;
+}
+
+float RedFeatureExtraction(int h, int w, unsigned char red, unsigned char blue, unsigned char green, float fRed, const IplImage *processed) {
+
+	if (blue <= 50 && green <= 50 && red >= 190)
+	{
+		fRed++;
+		((uchar *)(processed->imageData + h*processed->widthStep))[w*processed->nChannels + 0] = 0;
+		((uchar *)(processed->imageData + h*processed->widthStep))[w*processed->nChannels + 1] = 255;
+		((uchar *)(processed->imageData + h*processed->widthStep))[w*processed->nChannels + 2] = 0;
+	}
+
+	return fRed;
 }
 
 float OrangeFeatureExtraction(int h, int w, unsigned char red, unsigned char blue, unsigned char green, float fOrange, const IplImage *processed) {
@@ -345,9 +372,7 @@ float OrangeFeatureExtraction(int h, int w, unsigned char red, unsigned char blu
 		fOrange++;
 
 		// Just to be sure we are doing the right thing, we change the color of the orange pixels to green [R=0, G=255, B=0] and show them into a cloned image (processed)
-		((uchar *)(processed->imageData + h*processed->widthStep))[w*processed->nChannels + 0] = 0;
-		((uchar *)(processed->imageData + h*processed->widthStep))[w*processed->nChannels + 1] = 255;
-		((uchar *)(processed->imageData + h*processed->widthStep))[w*processed->nChannels + 2] = 0;
+
 	}
 
 	return fOrange;
@@ -355,14 +380,14 @@ float OrangeFeatureExtraction(int h, int w, unsigned char red, unsigned char blu
 
 void BuildFileName(int iNum, char *character, char *cFileName, bool training = true) {
 #ifdef __linux__ 
-    	char* trainPathPattern = "../Train/%s%d.bmp";
-    	char* validPathPattern = "../Valid/%s%d.bmp";
+	char* trainPathPattern = "../Train/%s%d.bmp";
+	char* validPathPattern = "../Valid/%s%d.bmp";
 #elif _WIN32
-    	char* trainPathPattern = "Train/%s%d.bmp";
-    	char* validPathPattern = "Valid/%s%d.bmp";
+	char* trainPathPattern = "Train/%s%d.bmp";
+	char* validPathPattern = "Valid/%s%d.bmp";
 #else
-    	char* trainPathPattern = "Train/%s%d.bmp";
-    	char* validPathPattern = "Valid/%s%d.bmp";
+	char* trainPathPattern = "Train/%s%d.bmp";
+	char* validPathPattern = "Valid/%s%d.bmp";
 #endif
 	// Build the image filename and path to read from disk
 	if (training) {
